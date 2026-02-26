@@ -1,349 +1,1016 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Batek'S Task Pro</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Batek'S Task Pro</title>
 
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#6C63FF">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#6C63FF">
 
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
 
-<style>
-:root{
-  --primary:#6C63FF;
-  --bg-light:#f4f6fb;
-  --bg-dark:#1e1e2f;
-  --short-term:#36A2EB;
-  --long-term:#FF6384;
-  --study:#FFCE56;
-  --work:#4BC0C0;
-  --personal:#9966FF;
-  --shadow: rgba(0,0,0,0.15);
-}
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-body{
-  font-family:'Segoe UI',sans-serif;
-  background:var(--bg-light);
-  transition:0.3s;
-  margin:0;
-  padding:0;
-}
+  <style>
+    :root {
+      --primary: #6C63FF;
+      --secondary: #FF6584;
+      --bg-gradient: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%);
+      --glass-bg: rgba(255, 255, 255, 0.85);
+      --glass-border: rgba(255, 255, 255, 0.5);
+      --text-dark: #2d3436;
+      --text-light: #636e72;
+      --shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
 
-.dark-mode{
-  background:var(--bg-dark);
-  color:white;
-}
+      /* Category Colors */
+      --c-short: #36A2EB;
+      --c-long: #FF6384;
+      --c-study: #FFCE56;
+      --c-work: #4BC0C0;
+      --c-personal: #9966FF;
+    }
 
-.container-app{
-  max-width:480px;
-  margin:auto;
-  padding:15px;
-}
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: var(--bg-gradient);
+      background-attachment: fixed;
+      min-height: 100vh;
+      color: var(--text-dark);
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+    }
 
-.card{
-  border-radius:20px;
-  padding:15px;
-  margin-bottom:15px;
-  background:white;
-  box-shadow:0 4px 12px var(--shadow);
-  transition:0.3s;
-}
+    .container-app {
+      width: 100%;
+      max-width: 500px;
+      background: var(--glass-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-radius: 30px;
+      border: 1px solid var(--glass-border);
+      box-shadow: var(--shadow);
+      padding: 25px;
+      animation: fadeIn 0.5s ease-out;
+    }
 
-.card:hover{
-  transform:scale(1.02);
-}
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
 
-.task{
-  cursor:grab;
-}
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
 
-.task:active{
-  transform:scale(1.02);
-}
+    /* Header */
+    h3 {
+      font-weight: 600;
+      background: -webkit-linear-gradient(45deg, #6C63FF, #FF6584);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin: 0;
+    }
 
-.completed{
-  text-decoration:line-through;
-  opacity:0.6;
-}
+    .theme-btn {
+      background: rgba(0, 0, 0, 0.05);
+      border: none;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: 0.3s;
+      color: var(--text-dark);
+    }
 
-button{
-  border-radius:10px;
-}
+    .theme-btn:hover {
+      background: var(--primary);
+      color: white;
+      transform: rotate(15deg);
+    }
 
-input, select{
-  border-radius:10px;
-}
+    /* Cards General */
+    .card {
+      background: rgba(255, 255, 255, 0.6);
+      border: none;
+      border-radius: 20px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+      transition: 0.3s;
+    }
 
-#calendar{
-  display:grid;
-  grid-template-columns:repeat(7,1fr);
-  gap:4px;
-}
+    .card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    }
 
-.calendar-header{
-  font-weight:bold;
-  text-align:center;
-  padding:4px 0;
-  font-size:12px;
-}
+    /* Progress Section */
+    .progress {
+      height: 12px !important;
+      background: #e0e0e0;
+      border-radius: 10px !important;
+      overflow: hidden;
+    }
 
-.calendar-day{
-  border-radius:10px;
-  min-height:60px;
-  padding:4px;
-  background:white;
-  font-size:11px;
-  overflow:auto;
-  transition:0.3s;
-}
+    .progress-bar {
+      background: linear-gradient(90deg, #6C63FF, #FF6584);
+      border-radius: 10px;
+      transition: width 1s ease-in-out;
+    }
 
-.calendar-day:hover{
-  box-shadow:0 2px 6px var(--shadow);
-}
+    /* Inputs & Selects */
+    .form-control,
+    .form-select {
+      border: 2px solid transparent;
+      background: #f1f2f6;
+      padding: 12px 15px;
+      border-radius: 15px;
+      font-family: 'Poppins', sans-serif;
+      transition: 0.3s;
+    }
 
-.calendar-day strong{
-  display:block;
-  font-size:12px;
-  margin-bottom:2px;
-}
+    .form-control:focus,
+    .form-select:focus {
+      background: white;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(108, 99, 255, 0.1);
+    }
 
-.task-badge{
-  display:block;
-  margin:2px 0;
-  padding:2px 4px;
-  font-size:10px;
-  border-radius:5px;
-  color:white;
-  cursor:default;
-  word-wrap: break-word;
-}
+    /* Buttons */
+    .btn-primary {
+      background: linear-gradient(45deg, #6C63FF, #5a52d5);
+      border: none;
+      padding: 12px;
+      font-weight: 500;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(108, 99, 255, 0.3);
+      transition: 0.3s;
+    }
 
-@media(max-width:400px){
-  .container-app{
-    padding:10px;
-  }
-  #calendar{
-    gap:2px;
-  }
-  .calendar-day{
-    min-height:50px;
-    font-size:10px;
-  }
-  .task-badge{
-    font-size:9px;
-    padding:1px 3px;
-  }
-}
-</style>
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(108, 99, 255, 0.4);
+      background: linear-gradient(45deg, #5a52d5, #6C63FF);
+    }
+
+    /* Task List Items */
+    .task-item {
+      background: white;
+      border-radius: 18px;
+      padding: 15px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+      transition: 0.3s;
+      border-left: 5px solid transparent;
+    }
+
+    .task-item:hover {
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+      transform: scale(1.01);
+    }
+
+    .task-content {
+      flex-grow: 1;
+      margin-left: 15px;
+    }
+
+    .task-text {
+      font-weight: 500;
+      font-size: 1rem;
+      color: var(--text-dark);
+      transition: 0.2s;
+      word-break: break-word;
+    }
+
+    .task-meta {
+      font-size: 0.75rem;
+      color: var(--text-light);
+      margin-top: 4px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .cat-badge {
+      padding: 2px 8px;
+      border-radius: 20px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: white;
+      text-transform: uppercase;
+    }
+
+    /* Custom Checkbox */
+    .custom-checkbox {
+      width: 24px;
+      height: 24px;
+      border: 2px solid #dfe6e9;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: 0.2s;
+      flex-shrink: 0;
+    }
+
+    .custom-checkbox.checked {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: white;
+    }
+
+    .task-item.completed .task-text {
+      text-decoration: line-through;
+      color: #b2bec3;
+    }
+
+    .task-item.completed {
+      background: #f8f9fa;
+      opacity: 0.8;
+    }
+
+    /* Action Buttons */
+    .action-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      border: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-left: 5px;
+      transition: 0.2s;
+      font-size: 0.9rem;
+    }
+
+    .btn-edit {
+      background: #e0f2fe;
+      color: #0984e3;
+    }
+
+    .btn-edit:hover {
+      background: #0984e3;
+      color: white;
+    }
+
+    .btn-del {
+      background: #ffe6e6;
+      color: #d63031;
+    }
+
+    .btn-del:hover {
+      background: #d63031;
+      color: white;
+    }
+
+    /* Calendar Styles */
+    .calendar-container {
+      background: rgba(255, 255, 255, 0.5);
+      border-radius: 20px;
+      padding: 15px;
+    }
+
+    .calendar-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 15px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .calendar-nav-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      border: none;
+      background: var(--primary);
+      color: white;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .calendar-nav-btn:hover {
+      transform: scale(1.1);
+      box-shadow: 0 4px 15px rgba(108, 99, 255, 0.4);
+    }
+
+    .calendar-nav-btn.secondary {
+      background: rgba(0, 0, 0, 0.1);
+      color: var(--text-dark);
+    }
+
+    .calendar-nav-btn.secondary:hover {
+      background: var(--primary);
+      color: white;
+    }
+
+    .calendar-title {
+      font-weight: 600;
+      font-size: 1.1rem;
+      color: var(--text-dark);
+      text-align: center;
+      min-width: 150px;
+    }
+
+    .calendar-selectors {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .calendar-select {
+      padding: 8px 12px;
+      border-radius: 10px;
+      border: 2px solid transparent;
+      background: white;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .calendar-select:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+
+    #calendar {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 6px;
+      margin-top: 10px;
+    }
+
+    .calendar-header {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-light);
+      text-align: center;
+      padding: 5px 0;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .calendar-day {
+      background: rgba(255, 255, 255, 0.8);
+      border-radius: 12px;
+      min-height: 55px;
+      padding: 6px 4px;
+      font-size: 0.8rem;
+      position: relative;
+      transition: 0.2s;
+      border: 1px solid transparent;
+      cursor: pointer;
+    }
+
+    .calendar-day:hover {
+      background: white;
+      border-color: #dfe6e9;
+      transform: scale(1.05);
+      z-index: 1;
+    }
+
+    .calendar-day.today {
+      background: linear-gradient(135deg, #6C63FF, #FF6584);
+      color: white;
+      box-shadow: 0 4px 15px rgba(108, 99, 255, 0.3);
+    }
+
+    .calendar-day.today strong {
+      color: white;
+    }
+
+    .calendar-day.other-month {
+      opacity: 0.4;
+      background: rgba(0, 0, 0, 0.02);
+    }
+
+    .calendar-day strong {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--text-dark);
+      font-weight: 500;
+    }
+
+    .task-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      display: inline-block;
+      margin: 1px;
+    }
+
+    /* Quick Year Navigation */
+    .quick-nav {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid rgba(0, 0, 0, 0.1);
+    }
+
+    .quick-nav-btn {
+      padding: 5px 10px;
+      border-radius: 8px;
+      border: none;
+      background: rgba(0, 0, 0, 0.05);
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: 0.2s;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    .quick-nav-btn:hover {
+      background: var(--primary);
+      color: white;
+    }
+
+    /* Dark Mode Overrides */
+    body.dark-mode .container-app {
+      background: rgba(30, 30, 47, 0.9);
+      color: white;
+    }
+
+    body.dark-mode .card,
+    body.dark-mode .task-item,
+    body.dark-mode .calendar-day,
+    body.dark-mode .calendar-container {
+      background: rgba(255, 255, 255, 0.05);
+      color: white;
+    }
+
+    body.dark-mode .form-control,
+    body.dark-mode .form-select,
+    body.dark-mode .calendar-select {
+      background: rgba(0, 0, 0, 0.2);
+      color: white;
+    }
+
+    body.dark-mode .task-text {
+      color: white;
+    }
+
+    body.dark-mode .task-item.completed .task-text {
+      color: #777;
+    }
+
+    body.dark-mode .calendar-header {
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    body.dark-mode .calendar-day strong {
+      color: white;
+    }
+
+    body.dark-mode .quick-nav {
+      border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    body.dark-mode .quick-nav-btn {
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+    }
+
+    @media (max-width: 480px) {
+      body {
+        padding: 10px;
+      }
+
+      .container-app {
+        padding: 20px;
+      }
+
+      .calendar-day {
+        min-height: 45px;
+        font-size: 0.7rem;
+      }
+
+      .calendar-title {
+        font-size: 0.95rem;
+        min-width: 100px;
+      }
+
+      .calendar-select {
+        padding: 6px 8px;
+        font-size: 0.8rem;
+      }
+    }
+  </style>
 </head>
 
 <body>
 
-<div class="container-app">
+  <div class="container-app">
 
-  <div class="d-flex justify-content-between align-items-center mb-3">
-    <h3 style="font-size:1.4rem">🔥 Batek'S Task Pro</h3>
-    <button class="btn btn-sm btn-outline-dark" onclick="toggleDarkMode()">🌙</button>
-  </div>
-
-  <!-- Progress -->
-  <div class="card">
-    <div class="d-flex justify-content-between">
-      <small>Progress</small>
-      <small id="progressText">0%</small>
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <div>
+        <h3 style="font-size:1.5rem"><i class="fas fa-check-double"></i> Batek'S Task Pro</h3>
+        <small class="text-muted">Organize your life</small>
+      </div>
+      <button class="theme-btn" onclick="toggleDarkMode()" title="Toggle Theme">
+        <i class="fas fa-moon"></i>
+      </button>
     </div>
-    <div class="progress mt-2" style="height:10px; border-radius:10px">
-      <div id="progressBar" class="progress-bar bg-success"></div>
+
+    <!-- Progress -->
+    <div class="card">
+      <div class="d-flex justify-content-between mb-2">
+        <small class="fw-bold">Daily Progress</small>
+        <small id="progressText" class="fw-bold text-primary">0%</small>
+      </div>
+      <div class="progress">
+        <div id="progressBar" class="progress-bar" role="progressbar"></div>
+      </div>
     </div>
+
+    <!-- Add Task -->
+    <div class="card">
+      <div class="input-group mb-3">
+        <span class="input-group-text bg-transparent border-0"
+          style="background:#f1f2f6; border-radius: 15px 0 0 15px;"><i class="fas fa-plus"></i></span>
+        <input type="text" id="taskInput" class="form-control" placeholder="What needs to be done?"
+          onkeypress="if(event.key === 'Enter') addTask()">
+      </div>
+
+      <div class="row g-2">
+        <div class="col-6">
+          <input type="date" id="dueDate" class="form-control">
+        </div>
+        <div class="col-6">
+          <select id="category" class="form-select">
+            <option value="Short-Term">Short-Term</option>
+            <option value="Long-Term">Long-Term</option>
+            <option value="Study">Study</option>
+            <option value="Work">Work</option>
+            <option value="Personal">Personal</option>
+          </select>
+        </div>
+      </div>
+
+      <button class="btn btn-primary w-100 mt-3" onclick="addTask()">
+        <i class="fas fa-save me-2"></i> Add Task
+      </button>
+    </div>
+
+    <!-- Task List -->
+    <div id="taskList"></div>
+
+    <!-- Dashboard -->
+    <div class="card">
+      <div class="d-flex align-items-center mb-3">
+        <i class="fas fa-chart-pie text-primary me-2"></i>
+        <h5 class="m-0">Analytics</h5>
+      </div>
+      <div style="max-height: 250px; display: flex; justify-content: center;">
+        <canvas id="taskChart"></canvas>
+      </div>
+    </div>
+
+    <!-- Calendar -->
+    <div class="card">
+      <div class="d-flex align-items-center mb-3">
+        <i class="fas fa-calendar-alt text-primary me-2"></i>
+        <h5 class="m-0">Schedule</h5>
+      </div>
+
+      <div class="calendar-container">
+        <!-- Calendar Navigation -->
+        <div class="calendar-nav">
+          <button class="calendar-nav-btn secondary" onclick="changeYear(-1)" title="Previous Year">
+            <i class="fas fa-chevron-left"></i>
+          </button>
+
+          <div class="calendar-title" id="calendarTitle">September 2024</div>
+
+          <button class="calendar-nav-btn secondary" onclick="changeYear(1)" title="Next Year">
+            <i class="fas fa-chevron-right"></i>
+          </button>
+        </div>
+
+        <!-- Month and Year Selectors -->
+        <div class="calendar-selectors">
+          <select id="monthSelect" class="calendar-select" onchange="updateCalendar()">
+            <option value="0">January</option>
+            <option value="1">February</option>
+            <option value="2">March</option>
+            <option value="3">April</option>
+            <option value="4">May</option>
+            <option value="5">June</option>
+            <option value="6">July</option>
+            <option value="7">August</option>
+            <option value="8">September</option>
+            <option value="9">October</option>
+            <option value="10">November</option>
+            <option value="11">December</option>
+          </select>
+
+          <select id="yearSelect" class="calendar-select" onchange="updateCalendar()">
+            <!-- Years will be populated by JavaScript -->
+          </select>
+        </div>
+
+        <!-- Calendar Grid -->
+        <div id="calendar"></div>
+
+        <!-- Quick Navigation -->
+        <div class="quick-nav">
+          <button class="quick-nav-btn" onclick="goToToday()">Today</button>
+          <button class="quick-nav-btn" onclick="changeMonth(-1)">← Month</button>
+          <button class="quick-nav-btn" onclick="changeMonth(1)">Month →</button>
+          <button class="quick-nav-btn" onclick="goToDateInput()">Go to Date</button>
+        </div>
+
+        <!-- Date Input for Quick Navigation -->
+        <div id="dateInputContainer" style="display:none; margin-top: 10px; text-align: center;">
+          <input type="date" id="quickDateInput" class="form-control" style="width: 150px; display: inline-block;">
+          <button class="btn btn-primary btn-sm" style="padding: 8px 15px;" onclick="goToQuickDate()">Go</button>
+        </div>
+      </div>
+    </div>
+
   </div>
 
-  <!-- Add / Edit Task -->
-  <div class="card">
-    <input type="text" id="taskInput" class="form-control mb-2" placeholder="Enter task...">
-    <input type="date" id="dueDate" class="form-control mb-2">
-    <select id="category" class="form-select mb-2">
-      <option>Short-Term</option>
-      <option>Long-Term</option>
-      <option>Study</option>
-      <option>Work</option>
-      <option>Personal</option>
-    </select>
-    <button class="btn btn-primary w-100 mb-1" onclick="addTask()">Add / Save Task</button>
-  </div>
+  <script>
+    let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+    let chart;
+    let editingIndex = null;
 
-  <!-- Task List -->
-  <div id="taskList"></div>
+    // Calendar State
+    let calendarYear = new Date().getFullYear();
+    let calendarMonth = new Date().getMonth();
 
-  <!-- Charts -->
-  <div class="card">
-    <h5>📊 Dashboard</h5>
-    <canvas id="taskChart"></canvas>
-  </div>
+    const categoryColors = {
+      "Short-Term": "#36A2EB",
+      "Long-Term": "#FF6384",
+      "Study": "#FFCE56",
+      "Work": "#4BC0C0",
+      "Personal": "#9966FF"
+    };
 
-  <!-- Calendar -->
-  <div class="card">
-    <h5>📅 Calendar View</h5>
-    <div id="calendar"></div>
-  </div>
+    // Month names for display
+    const monthNames = ["January", "February", "March", "April", "May", "June",
+      "July", "August", "September", "October", "November", "December"
+    ];
 
-</div>
+    // ================= INITIALIZATION =================
+    function initCalendar() {
+      populateYearSelect();
+      updateCalendarTitle();
+      document.getElementById('monthSelect').value = calendarMonth;
+      document.getElementById('yearSelect').value = calendarYear;
+    }
 
-<script>
-let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
-let chart;
-let editingIndex = null;
+    // Populate year select with 500 years range
+    function populateYearSelect() {
+      const yearSelect = document.getElementById('yearSelect');
+      yearSelect.innerHTML = '';
 
-const categoryColors={
-  "Short-Term":"var(--short-term)",
-  "Long-Term":"var(--long-term)",
-  "Study":"var(--study)",
-  "Work":"var(--work)",
-  "Personal":"var(--personal)"
-};
+      const currentYear = new Date().getFullYear();
+      const startYear = currentYear - 500;
+      const endYear = currentYear + 500;
 
-// ================= CORE APP =================
-function saveTasks(){ localStorage.setItem("tasks",JSON.stringify(tasks)); }
+      for (let year = endYear; year >= startYear; year--) {
+        const option = document.createElement('option');
+        option.value = year;
+        option.textContent = year;
+        yearSelect.appendChild(option);
+      }
+    }
 
-function addTask(){
-  let text=document.getElementById("taskInput").value.trim();
-  let date=document.getElementById("dueDate").value;
-  let category=document.getElementById("category").value;
-  if(!text) return;
+    // ================= CORE APP =================
+    function saveTasks() { localStorage.setItem("tasks", JSON.stringify(tasks)); }
 
-  if(editingIndex !== null){
-    tasks[editingIndex] = {text,date,category,completed:tasks[editingIndex].completed};
-    editingIndex = null;
-  } else {
-    tasks.push({text,date,category,completed:false});
-  }
+    function addTask() {
+      let text = document.getElementById("taskInput").value.trim();
+      let date = document.getElementById("dueDate").value;
+      let category = document.getElementById("category").value;
 
-  document.getElementById("taskInput").value="";
-  document.getElementById("dueDate").value="";
-  saveTasks();
-  renderAll();
-}
+      if (!text) {
+        const input = document.getElementById("taskInput");
+        input.style.borderColor = "#ff6b6b";
+        setTimeout(() => input.style.borderColor = "transparent", 1000);
+        return;
+      }
 
-function editTask(i){
-  const t = tasks[i];
-  document.getElementById("taskInput").value = t.text;
-  document.getElementById("dueDate").value = t.date;
-  document.getElementById("category").value = t.category;
-  editingIndex = i;
-}
+      if (editingIndex !== null) {
+        tasks[editingIndex] = { text, date, category, completed: tasks[editingIndex].completed };
+        editingIndex = null;
+        document.querySelector('button[onclick="addTask()"]').innerHTML = '<i class="fas fa-plus me-2"></i> Add Task';
+      } else {
+        tasks.push({ text, date, category, completed: false });
+      }
 
-function toggleTask(i){
-  tasks[i].completed = !tasks[i].completed;
-  saveTasks();
-  renderAll();
-}
+      document.getElementById("taskInput").value = "";
+      document.getElementById("dueDate").value = "";
+      saveTasks();
+      renderAll();
+    }
 
-function deleteTask(i){
-  tasks.splice(i,1);
-  saveTasks();
-  renderAll();
-}
+    function editTask(i) {
+      const t = tasks[i];
+      document.getElementById("taskInput").value = t.text;
+      document.getElementById("dueDate").value = t.date;
+      document.getElementById("category").value = t.category;
+      editingIndex = i;
 
-function renderTasks(){
-  const list = document.getElementById("taskList");
-  list.innerHTML = "";
-  tasks.forEach((t,i)=>{
-    list.innerHTML += `
-      <div class="card task">
-        <div class="d-flex justify-content-between align-items-center flex-wrap">
-          <span onclick="toggleTask(${i})" class="${t.completed?'completed':''}">
-            ${t.text}
-          </span>
-          <div class="mt-1 mt-sm-0">
-            <button class="btn btn-sm btn-warning me-1" onclick="editTask(${i})">Edit</button>
-            <button class="btn btn-sm btn-danger" onclick="deleteTask(${i})">X</button>
+      const btn = document.querySelector('button[onclick="addTask()"]');
+      btn.innerHTML = '<i class="fas fa-pen me-2"></i> Update Task';
+      btn.classList.remove('btn-primary');
+      btn.classList.add('btn-warning');
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function toggleTask(i) {
+      tasks[i].completed = !tasks[i].completed;
+      saveTasks();
+      renderAll();
+    }
+
+    function deleteTask(i) {
+      if (confirm("Delete this task?")) {
+        tasks.splice(i, 1);
+        saveTasks();
+        renderAll();
+      }
+    }
+
+    function renderTasks() {
+      const list = document.getElementById("taskList");
+      list.innerHTML = "";
+
+      if (tasks.length === 0) {
+        list.innerHTML = `<div class="text-center text-muted py-4" style="font-style:italic;">No tasks yet. Add one above!</div>`;
+        return;
+      }
+
+      tasks.forEach((t, i) => {
+        const isCompleted = t.completed ? 'completed' : '';
+        const checkClass = t.completed ? 'checked' : '';
+        const color = categoryColors[t.category] || '#888';
+
+        list.innerHTML += `
+      <div class="task-item ${isCompleted}" style="border-left-color: ${color}">
+        <div class="custom-checkbox ${checkClass}" onclick="toggleTask(${i})">
+          ${t.completed ? '<i class="fas fa-check" style="font-size:12px"></i>' : ''}
+        </div>
+        
+        <div class="task-content">
+          <div class="task-text">${t.text}</div>
+          <div class="task-meta">
+            <span class="cat-badge" style="background-color: ${color}">${t.category}</span>
+            <span><i class="far fa-clock"></i> ${t.date || 'No date'}</span>
           </div>
         </div>
-        <small>${t.category} | ${t.date||'No date'}</small>
+
+        <div>
+          <button class="action-btn btn-edit" onclick="editTask(${i})" title="Edit"><i class="fas fa-pen"></i></button>
+          <button class="action-btn btn-del" onclick="deleteTask(${i})" title="Delete"><i class="fas fa-trash"></i></button>
+        </div>
       </div>
     `;
-  });
-}
-
-function updateProgress(){
-  let done = tasks.filter(t=>t.completed).length;
-  let percent = tasks.length ? Math.round(done/tasks.length*100) : 0;
-  document.getElementById("progressBar").style.width = percent + "%";
-  document.getElementById("progressText").innerText = percent + "%";
-}
-
-function updateChart(){
-  const categories = {};
-  tasks.forEach(t=>{ categories[t.category] = (categories[t.category]||0)+1; });
-  if(chart) chart.destroy();
-  chart = new Chart(document.getElementById("taskChart"),{
-    type:"doughnut",
-    data:{
-      labels:Object.keys(categories),
-      datasets:[{
-        data:Object.values(categories),
-        backgroundColor:["#FF6384","#36A2EB","#FFCE56","#4BC0C0","#9966FF"]
-      }]
+      });
     }
-  });
-}
 
-function renderCalendar(){
-  const calendar = document.getElementById("calendar");
-  calendar.innerHTML = "";
+    function updateProgress() {
+      let done = tasks.filter(t => t.completed).length;
+      let percent = tasks.length ? Math.round(done / tasks.length * 100) : 0;
+      document.getElementById("progressBar").style.width = percent + "%";
+      document.getElementById("progressText").innerText = percent + "%";
+    }
 
-  const weekdays=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
-  weekdays.forEach(day=>{
-    const div=document.createElement("div");
-    div.className="calendar-header";
-    div.innerText=day;
-    calendar.appendChild(div);
-  });
+    function updateChart() {
+      const categories = {};
+      tasks.forEach(t => { categories[t.category] = (categories[t.category] || 0) + 1; });
 
-  const today=new Date();
-  const year=today.getFullYear();
-  const month=today.getMonth();
-  const firstDay=new Date(year,month,1).getDay();
-  const daysInMonth=new Date(year,month+1,0).getDate();
+      if (chart) chart.destroy();
 
-  for(let i=0;i<firstDay;i++){
-    calendar.appendChild(document.createElement("div"));
-  }
+      const ctx = document.getElementById("taskChart").getContext("2d");
+      chart = new Chart(ctx, {
+        type: "doughnut",
+        data: {
+          labels: Object.keys(categories),
+          datasets: [{
+            data: Object.values(categories),
+            backgroundColor: ["#36A2EB", "#FF6384", "#FFCE56", "#4BC0C0", "#9966FF"],
+            borderWidth: 0,
+            hoverOffset: 4
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { position: 'right', labels: { usePointStyle: true, font: { family: 'Poppins' } } }
+          },
+          cutout: '70%'
+        }
+      });
+    }
 
-  for(let d=1; d<=daysInMonth; d++){
-    const dateStr=`${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-    const dayTasks = tasks.filter(t=>t.date===dateStr);
-    const div = document.createElement("div");
-    div.className = "calendar-day";
-    div.innerHTML = `<strong>${d}</strong>`;
-    dayTasks.forEach(t=>{
-      const span = document.createElement("span");
-      span.className="task-badge";
-      span.style.backgroundColor = categoryColors[t.category]||"#888";
-      span.innerText = t.text;
-      div.appendChild(span);
-    });
-    calendar.appendChild(div);
-  }
-}
+    // ================= CALENDAR FUNCTIONS =================
 
-function toggleDarkMode(){ document.body.classList.toggle("dark-mode"); }
+    // Update calendar title
+    function updateCalendarTitle() {
+      document.getElementById('calendarTitle').textContent = monthNames[calendarMonth] + ' ' + calendarYear;
+    }
 
-function renderAll(){
-  renderTasks();
-  updateProgress();
-  updateChart();
-  renderCalendar();
-}
+    // Change month by offset
+    function changeMonth(offset) {
+      calendarMonth += offset;
+      if (calendarMonth > 11) {
+        calendarMonth = 0;
+        calendarYear++;
+      } else if (calendarMonth < 0) {
+        calendarMonth = 11;
+        calendarYear--;
+      }
+      updateCalendarUI();
+    }
 
-renderAll();
+    // Change year by offset
+    function changeYear(offset) {
+      calendarYear += offset;
+      updateCalendarUI();
+    }
 
-if('serviceWorker' in navigator){
-  navigator.serviceWorker.register('service-worker.js');
-}
-</script>
+    // Update calendar from select inputs
+    function updateCalendar() {
+      calendarMonth = parseInt(document.getElementById('monthSelect').value);
+      calendarYear = parseInt(document.getElementById('yearSelect').value);
+      updateCalendarUI();
+    }
 
+    // Update calendar UI
+    function updateCalendarUI() {
+      document.getElementById('monthSelect').value = calendarMonth;
+      document.getElementById('yearSelect').value = calendarYear;
+      updateCalendarTitle();
+      renderCalendar();
+    }
+
+    // Go to today's date
+    function goToToday() {
+      const today = new Date();
+      calendarYear = today.getFullYear();
+      calendarMonth = today.getMonth();
+      updateCalendarUI();
+      hideDateInput();
+    }
+
+    // Toggle date input visibility
+    function goToDateInput() {
+      const container = document.getElementById('dateInputContainer');
+      container.style.display = container.style.display === 'none' ? 'block' : 'none';
+    }
+
+    // Go to specific date from input
+    function goToQuickDate() {
+      const input = document.getElementById('quickDateInput').value;
+      if (input) {
+        const date = new Date(input);
+        calendarYear = date.getFullYear();
+        calendarMonth = date.getMonth();
+        updateCalendarUI();
+        hideDateInput();
+      }
+    }
+
+    // Hide date input
+    function hideDateInput() {
+      document.getElementById('dateInputContainer').style.display = 'none';
+    }
+
+    function renderCalendar() {
+      const calendar = document.getElementById("calendar");
+      calendar.innerHTML = "";
+
+      const weekdays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+      weekdays.forEach(day => {
+        const div = document.createElement("div");
+        div.className = "calendar-header";
+        div.innerText = day;
+        calendar.appendChild(div);
+      });
+
+      const today = new Date();
+      const currentYear = today.getFullYear();
+      const currentMonth = today.getMonth();
+      const currentDay = today.getDate();
+
+      const firstDay = new Date(calendarYear, calendarMonth, 1).getDay();
+      const daysInMonth = new Date(calendarYear, calendarMonth + 1, 0).getDate();
+
+      // Days in previous month for padding
+      const prevMonthDays = new Date(calendarYear, calendarMonth, 0).getDate();
+
+      // Previous month days
+      for (let i = firstDay - 1; i >= 0; i--) {
+        const dayNum = prevMonthDays - i;
+        const div = createDayElement(dayNum, true);
+        calendar.appendChild(div);
+      }
+
+      // Current month days
+      for (let d = 1; d <= daysInMonth; d++) {
+        const dateStr = `${calendarYear}-${String(calendarMonth + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+        const dayTasks = tasks.filter(t => t.date === dateStr);
+
+        const div = document.createElement("div");
+        div.className = "calendar-day";
+
+        // Check if it's today
+        if (d === currentDay && calendarYear === currentYear && calendarMonth === currentMonth) {
+          div.classList.add("today");
+        }
+
+        div.innerHTML = `<strong>${d}</strong>`;
+
+        // Show dots for tasks
+        dayTasks.forEach(t => {
+          const dot = document.createElement("span");
+          dot.className = "task-dot";
+          dot.style.backgroundColor = categoryColors[t.category] || "#888";
+          dot.title = t.text; // Tooltip for task name
+          div.appendChild(dot);
+        });
+
+        calendar.appendChild(div);
+      }
+
+      // Next month days to fill the grid
+      const totalCells = firstDay + daysInMonth;
+      const remainingCells = 42 - totalCells; // 6 rows × 7 days
+
+      for (let d = 1; d <= remainingCells; d++) {
+        const div = createDayElement(d, true);
+        calendar.appendChild(div);
+      }
+    }
+
+    // Create a day element
+    function createDayElement(dayNum, isOtherMonth) {
+      const div = document.createElement("div");
+      div.className = "calendar-day";
+      if (isOtherMonth) {
+        div.classList.add("other-month");
+      }
+      div.innerHTML = `<strong>${dayNum}</strong>`;
+      return div;
+    }
+
+    function toggleDarkMode() {
+      document.body.classList.toggle("dark-mode");
+      const icon = document.querySelector('.theme-btn i');
+      if (document.body.classList.contains('dark-mode')) {
+        icon.classList.remove('fa-moon');
+        icon.classList.add('fa-sun');
+      } else {
+        icon.classList.remove('fa-sun');
+        icon.classList.add('fa-moon');
+      }
+    }
+
+    function renderAll() {
+      renderTasks();
+      updateProgress();
+      updateChart();
+      renderCalendar();
+    }
+
+    // Initialize app
+    initCalendar();
+    renderAll();
+
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('service-worker.js');
+    }
+  </script>
 </body>
 </html>
