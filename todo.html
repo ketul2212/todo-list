@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Batek'S Task Pro</title>
+
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#6C63FF">
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+:root{
+  --primary:#6C63FF;
+  --bg-light:#f4f6fb;
+  --bg-dark:#1e1e2f;
+  --short-term:#36A2EB;
+  --long-term:#FF6384;
+  --study:#FFCE56;
+  --work:#4BC0C0;
+  --personal:#9966FF;
+  --shadow: rgba(0,0,0,0.15);
+}
+
+body{
+  font-family:'Segoe UI',sans-serif;
+  background:var(--bg-light);
+  transition:0.3s;
+  margin:0;
+  padding:0;
+}
+
+.dark-mode{
+  background:var(--bg-dark);
+  color:white;
+}
+
+.container-app{
+  max-width:480px;
+  margin:auto;
+  padding:15px;
+}
+
+.card{
+  border-radius:20px;
+  padding:15px;
+  margin-bottom:15px;
+  background:white;
+  box-shadow:0 4px 12px var(--shadow);
+  transition:0.3s;
+}
+
+.card:hover{
+  transform:scale(1.02);
+}
+
+.task{
+  cursor:grab;
+}
+
+.task:active{
+  transform:scale(1.02);
+}
+
+.completed{
+  text-decoration:line-through;
+  opacity:0.6;
+}
+
+button{
+  border-radius:10px;
+}
+
+input, select{
+  border-radius:10px;
+}
+
+#calendar{
+  display:grid;
+  grid-template-columns:repeat(7,1fr);
+  gap:4px;
+}
+
+.calendar-header{
+  font-weight:bold;
+  text-align:center;
+  padding:4px 0;
+  font-size:12px;
+}
+
+.calendar-day{
+  border-radius:10px;
+  min-height:60px;
+  padding:4px;
+  background:white;
+  font-size:11px;
+  overflow:auto;
+  transition:0.3s;
+}
+
+.calendar-day:hover{
+  box-shadow:0 2px 6px var(--shadow);
+}
+
+.calendar-day strong{
+  display:block;
+  font-size:12px;
+  margin-bottom:2px;
+}
+
+.task-badge{
+  display:block;
+  margin:2px 0;
+  padding:2px 4px;
+  font-size:10px;
+  border-radius:5px;
+  color:white;
+  cursor:default;
+  word-wrap: break-word;
+}
+
+@media(max-width:400px){
+  .container-app{
+    padding:10px;
+  }
+  #calendar{
+    gap:2px;
+  }
+  .calendar-day{
+    min-height:50px;
+    font-size:10px;
+  }
+  .task-badge{
+    font-size:9px;
+    padding:1px 3px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container-app">
+
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h3 style="font-size:1.4rem">🔥 Batek'S Task Pro</h3>
+    <button class="btn btn-sm btn-outline-dark" onclick="toggleDarkMode()">🌙</button>
+  </div>
+
+  <!-- Progress -->
+  <div class="card">
+    <div class="d-flex justify-content-between">
+      <small>Progress</small>
+      <small id="progressText">0%</small>
+    </div>
+    <div class="progress mt-2" style="height:10px; border-radius:10px">
+      <div id="progressBar" class="progress-bar bg-success"></div>
+    </div>
+  </div>
+
+  <!-- Add / Edit Task -->
+  <div class="card">
+    <input type="text" id="taskInput" class="form-control mb-2" placeholder="Enter task...">
+    <input type="date" id="dueDate" class="form-control mb-2">
+    <select id="category" class="form-select mb-2">
+      <option>Short-Term</option>
+      <option>Long-Term</option>
+      <option>Study</option>
+      <option>Work</option>
+      <option>Personal</option>
+    </select>
+    <button class="btn btn-primary w-100 mb-1" onclick="addTask()">Add / Save Task</button>
+  </div>
+
+  <!-- Task List -->
+  <div id="taskList"></div>
+
+  <!-- Charts -->
+  <div class="card">
+    <h5>📊 Dashboard</h5>
+    <canvas id="taskChart"></canvas>
+  </div>
+
+  <!-- Calendar -->
+  <div class="card">
+    <h5>📅 Calendar View</h5>
+    <div id="calendar"></div>
+  </div>
+
+</div>
+
+<script>
+let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+let chart;
+let editingIndex = null;
+
+const categoryColors={
+  "Short-Term":"var(--short-term)",
+  "Long-Term":"var(--long-term)",
+  "Study":"var(--study)",
+  "Work":"var(--work)",
+  "Personal":"var(--personal)"
+};
+
+// ================= CORE APP =================
+function saveTasks(){ localStorage.setItem("tasks",JSON.stringify(tasks)); }
+
+function addTask(){
+  let text=document.getElementById("taskInput").value.trim();
+  let date=document.getElementById("dueDate").value;
+  let category=document.getElementById("category").value;
+  if(!text) return;
+
+  if(editingIndex !== null){
+    tasks[editingIndex] = {text,date,category,completed:tasks[editingIndex].completed};
+    editingIndex = null;
+  } else {
+    tasks.push({text,date,category,completed:false});
+  }
+
+  document.getElementById("taskInput").value="";
+  document.getElementById("dueDate").value="";
+  saveTasks();
+  renderAll();
+}
+
+function editTask(i){
+  const t = tasks[i];
+  document.getElementById("taskInput").value = t.text;
+  document.getElementById("dueDate").value = t.date;
+  document.getElementById("category").value = t.category;
+  editingIndex = i;
+}
+
+function toggleTask(i){
+  tasks[i].completed = !tasks[i].completed;
+  saveTasks();
+  renderAll();
+}
+
+function deleteTask(i){
+  tasks.splice(i,1);
+  saveTasks();
+  renderAll();
+}
+
+function renderTasks(){
+  const list = document.getElementById("taskList");
+  list.innerHTML = "";
+  tasks.forEach((t,i)=>{
+    list.innerHTML += `
+      <div class="card task">
+        <div class="d-flex justify-content-between align-items-center flex-wrap">
+          <span onclick="toggleTask(${i})" class="${t.completed?'completed':''}">
+            ${t.text}
+          </span>
+          <div class="mt-1 mt-sm-0">
+            <button class="btn btn-sm btn-warning me-1" onclick="editTask(${i})">Edit</button>
+            <button class="btn btn-sm btn-danger" onclick="deleteTask(${i})">X</button>
+          </div>
+        </div>
+        <small>${t.category} | ${t.date||'No date'}</small>
+      </div>
+    `;
+  });
+}
+
+function updateProgress(){
+  let done = tasks.filter(t=>t.completed).length;
+  let percent = tasks.length ? Math.round(done/tasks.length*100) : 0;
+  document.getElementById("progressBar").style.width = percent + "%";
+  document.getElementById("progressText").innerText = percent + "%";
+}
+
+function updateChart(){
+  const categories = {};
+  tasks.forEach(t=>{ categories[t.category] = (categories[t.category]||0)+1; });
+  if(chart) chart.destroy();
+  chart = new Chart(document.getElementById("taskChart"),{
+    type:"doughnut",
+    data:{
+      labels:Object.keys(categories),
+      datasets:[{
+        data:Object.values(categories),
+        backgroundColor:["#FF6384","#36A2EB","#FFCE56","#4BC0C0","#9966FF"]
+      }]
+    }
+  });
+}
+
+function renderCalendar(){
+  const calendar = document.getElementById("calendar");
+  calendar.innerHTML = "";
+
+  const weekdays=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+  weekdays.forEach(day=>{
+    const div=document.createElement("div");
+    div.className="calendar-header";
+    div.innerText=day;
+    calendar.appendChild(div);
+  });
+
+  const today=new Date();
+  const year=today.getFullYear();
+  const month=today.getMonth();
+  const firstDay=new Date(year,month,1).getDay();
+  const daysInMonth=new Date(year,month+1,0).getDate();
+
+  for(let i=0;i<firstDay;i++){
+    calendar.appendChild(document.createElement("div"));
+  }
+
+  for(let d=1; d<=daysInMonth; d++){
+    const dateStr=`${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const dayTasks = tasks.filter(t=>t.date===dateStr);
+    const div = document.createElement("div");
+    div.className = "calendar-day";
+    div.innerHTML = `<strong>${d}</strong>`;
+    dayTasks.forEach(t=>{
+      const span = document.createElement("span");
+      span.className="task-badge";
+      span.style.backgroundColor = categoryColors[t.category]||"#888";
+      span.innerText = t.text;
+      div.appendChild(span);
+    });
+    calendar.appendChild(div);
+  }
+}
+
+function toggleDarkMode(){ document.body.classList.toggle("dark-mode"); }
+
+function renderAll(){
+  renderTasks();
+  updateProgress();
+  updateChart();
+  renderCalendar();
+}
+
+renderAll();
+
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('service-worker.js');
+}
+</script>
+
+</body>
+</html>
